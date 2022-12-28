@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem name="Address Book"
+              id="menu_address_book"
+              web_icon="om_address_book,static/description/icon.png"
+              sequence="0"/>
+    <menuitem name="Contacts"
+              id="menu_contacts"
+              parent="menu_address_book"
+              sequence="0"/>
+</odoo>

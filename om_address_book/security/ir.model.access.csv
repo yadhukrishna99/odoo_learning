@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+om_address_book.access_person_details,access_person_details,om_address_book.model_person_details,base.group_user,1,1,1,1
