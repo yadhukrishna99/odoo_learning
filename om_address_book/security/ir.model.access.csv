@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 om_address_book.access_person_details,access_person_details,om_address_book.model_person_details,base.group_user,1,1,1,1
+om_address_book.access_person_call_details,access_person_call_details,om_address_book.model_call_details,base.group_user,1,1,1,1
+om_address_book.access_items_list,access_items_list,om_address_book.model_items_list,base.group_user,1,1,1,1
+om_address_book.access_contact_tags,access_contact_tags,om_address_book.model_contact_tags,base.group_user,1,1,1,1
+om_address_book.access_cancel_call_wizard,access_cancel_call_wizard,om_address_book.model_cancel_call_wizard,base.group_user,1,1,1,1

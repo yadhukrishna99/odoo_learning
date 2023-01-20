@@ -4,11 +4,12 @@
         <field name="name">hospital.patient.tree</field>
         <field name="model">hospital.patient</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree sample="1" export_xlsx="0">
                 <field name="name" string="Patient Name"/>
                 <field name="age"/>
                 <field name="ref"/>
                 <field name="gender"/>
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
             </tree>
         </field>
     </record>
@@ -17,20 +18,80 @@
         <field name="name">hospital.patient.form</field>
         <field name="model">hospital.patient</field>
         <field name="arch" type="xml">
-            <form>
+            <form delete="0" create="0">
                 <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h2>
+                            <label for="name" string="Name" class="oe_edit_only"/>
+                            <field name="name"/>
+                        </h2>
+                        <h4>
+                            <field name="ref" readonly="1"/>
+                        </h4>
+                    </div>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="dob" class="oe_edit_only"/>
                             <field name="age"/>
+                            <field name="appointment_count"/>
                         </group>
                         <group>
-                            <field name="ref"/>
-                            <field name="gender"/>
+                            <field name="gender" invisible="context.get('hide_gender')"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                             <field name="active" invisible='1'/>
                         </group>
                     </group>
+                    <group string="Other Information" name="other_info">
+                        <group>
+                            <field name="parent" attrs="{'invisible': [('age', '>', 18)],
+                                    'required': [('age', '&lt;', 18 )]}"/>
+                            <field name="marital_status" attrs="{'invisible': [('age', '&lt;', 18)]}"/>
+                            <field name="partner" attrs="{'readonly': [('marital_status', '=', 'single')],
+                                   'required': [('marital_status', '=', 'married')],
+                                   'invisible': [('age', '&lt;', 18)]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Appointments" name="appointment">
+                            <field name="appointment_ids" readonly="1">
+                                <tree decoration-success="state in 'done'" decoration-warning="state in 'draft'"
+                                      decoration-danger="state in 'cancelled'" sample="1" multi_edit="1">
+                                    <field name="patient_id"/>
+                                    <field name="ref" optional="show"/>
+                                    <field name="gender" optional="hide"/>
+                                    <field name="doctor_id" widget="many2one_avatar_user"/>
+                                    <field name="booking_date" optional="hide"/>
+                                    <field name="appointment_time"/>
+                                    <field name="state" widget="badge" decoration-warning="state in 'draft'"
+                                           decoration-info="state in 'in_consultation'"
+                                           decoration-success="state in 'done'"
+                                           decoration-danger="state in 'cancelled'"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="patient_id"/>
+                                            <field name="ref"/>
+                                            <field name="gender"/>
+                                            <field name="doctor_id" widget="many2one_avatar"/>
+                                            <field name="appointment_time"/>
+                                        </group>
+                                        <group>
+                                            <field name="booking_date"/>
+                                            <field name="active" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -39,18 +100,22 @@
         <field name="model">hospital.patient</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" string="Patient Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
+                <field name="name" string="Patient Name"
+                       filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
                 <field name="ref"/>
                 <filter name="filter_male" string="Male" domain="[('gender' , '=' , 'male')]"/>
                 <filter name="filter_female" string="Female" domain="[('gender' , '=' , 'female')]"/>
-                <separator/>
-                <filter name="filter_kids" string="Kids" domain="[('age' , '&lt;=' , 10)]"/>
+                <!--                <separator/>-->
+                <!--                <filter name="filter_kids" string="Kids" domain="[('age' , '&lt;=' , 10)]"/>-->
                 <separator/>
                 <filter name="filter_archived" string="Archived" domain="[('active' , '=' , False)]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_gender" string="Gender"  context="{'group_by': 'gender'}"/>
-                    <filter name="group_age" string="Age"  context="{'group_by': 'age'}"/>
+                    <filter name="group_gender" string="Gender" context="{'group_by': 'gender'}"/>
+                    <filter name="group_age" string="Age" context="{'group_by': 'age'}"/>
                 </group>
+                <searchpanel>
+                    <field name="gender" string="Categories" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -68,7 +133,7 @@
         </field>
     </record>
 
-    <menuitem name="Patient"
+    <menuitem name="Patients"
               id="menu_patient_master"
               action="action_hospital_patient"
               parent="menu_patient"

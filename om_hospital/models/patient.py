@@ -1,11 +1,71 @@
-from odoo import api, fields, models
+from datetime import date
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
+
 
 class HospitalPatient(models.Model):
     _name = "hospital.patient"
-    _description = "Hospital Patient"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _description = "Hospital Patients"
 
-    name = fields.Char(string='Name')
-    ref = fields.Char(string='Reference')
-    age = fields.Integer(string="Age")
-    gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender")
-    active = fields.Boolean(string='Active', default=True)
+    name = fields.Char(string='Name', tracking=True)
+    dob = fields.Date(string="Date Of Birth")
+    ref = fields.Char(string='Reference', tracking=True)
+    age = fields.Integer(string="Age", compute="_compute_age", tracking=True, store=True)
+    gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender", tracking=True)
+    active = fields.Boolean(string='Active', default=True, tracking=True)
+    appointment_ids = fields.One2many('hospital.appointment', 'patient_id', string="Appointments")
+    image = fields.Image(string="Image")
+    tag_ids = fields.Many2many('patient.tags', 'hospital_patient_tags_rel', 'patient_id', 'tag_id', string="Tags")
+    appointment_count = fields.Integer(string="Appointment count", compute="_compute_appointment_count", store=True)
+    parent = fields.Char(string="Parent Name")
+    marital_status = fields.Selection([('married', 'Married'), ('single', 'Single')], string="Marital Status")
+    partner = fields.Char(string="Partner Name")
+
+    def _compute_appointment_count(self):
+        for rec in self:
+            rec.appointment_count = self.env['hospital.appointment'].search_count([('patient_id', '=', rec.name)])
+
+    @api.constrains('dob')
+    def check_dob(self):
+        if self.dob and self.dob > fields.date.today():
+            raise ValidationError(_("Invalid date of birth"))
+
+    @api.ondelete(at_uninstall=False)
+    def check_appointments(self):
+        for rec in self:
+            if rec.appointment_ids:
+                raise ValidationError(_("You cannot delete patient with appointment"))
+
+    # This is to overwrite the create function of the odoo
+    @api.model
+    def create(self, val):
+        print(val)
+        val['ref'] = self.env['ir.sequence'].next_by_code('hospital.patients')
+        print("Created Record and going to be saved in the database", val)
+        return super().create(val)
+
+    def write(self, val):
+        if not self.ref and not val.get('ref'):
+            val['ref'] = self.env['ir.sequence'].next_by_code('hospital.patients')
+        print("Trigerred write method", val)
+        return super().write(val)
+
+    @api.depends('dob')
+    # the above api line is for sudden execution of the age value
+    def _compute_age(self):
+        for rec in self:
+            if rec.dob:
+                today = date.today()
+                rec.age = today.year - rec.dob.year
+            else:
+                rec.age = 0
+
+    def name_get(self):
+        return [(rec.id, "[%s] %s" % (rec.ref, rec.name)) for rec in self]
+
+    def action_test(self):
+        print("Clicked...")
+        return
+
+

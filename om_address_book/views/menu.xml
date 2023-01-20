@@ -9,4 +9,12 @@
               id="menu_contacts"
               parent="menu_address_book"
               sequence="0"/>
+    <menuitem name="Call Details"
+              id="menu_call_details"
+              parent="menu_address_book"
+              sequence="10"/>
+<!--    <menuitem name="Configurations"-->
+<!--              id="menu_config"-->
+<!--              parent="menu_address_book"-->
+<!--              sequence="20"/>-->
 </odoo>

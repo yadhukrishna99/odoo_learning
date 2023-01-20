@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_male_contacts" model="ir.actions.act_window">
+        <field name="name">Male Contacts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">person.details</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'default_gender':'male', 'search_default_filter_male':1, 'hide_gender':1}</field>
+        <field name="domain">[('gender' , '=' , 'male')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                PLEASE create your first  Male contact !!!....
+            </p>
+        </field>
+    </record>
+    <menuitem name="Male Contacts"
+              id="menu_male_contacts"
+              action="action_male_contacts"
+              parent="menu_contacts"
+              sequence="10"/>
+</odoo>

@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="view_contacts_activity" model="ir.ui.view">
+        <field name="name">contacts.details.activity</field>
+        <field name="model">person.details</field>
+        <field name="arch" type="xml">
+            <activity string="Schedule">
+                <field name="name"/>
+                <templates>
+                    <div t-name="activity-box">
+                        <img t-att-src="activity_image('image', record.name.raw_value)"
+                             t-att-title="record.name.value" t-att-alt="record.name.value"/>
+                        <div>
+                            <field name="name" display="full"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
     <record id="view_contacts_tree" model="ir.ui.view">
         <field name="name">contacts.details.tree</field>
         <field name="model">person.details</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree sample="1" export_xlsx="0">
                 <field name="name" string="Name"/>
+                <field name="ref"/>
+                <field name="gender" invisible="context.get('hide_gender')"/>
                 <field name="city"/>
-                <field name="address"/>
+                <field name="address" optional="hide"/>
                 <field name="phnum"/>
-                <field name="email"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="email" optional="hide"/>
+                <field name="tags" widget="many2many_tags" options="{'color_field': 'color_pick'}"/>
             </tree>
         </field>
     </record>
@@ -17,22 +41,55 @@
         <field name="name">details.form</field>
         <field name="model">person.details</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0">
                 <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <label for="name" string="Name" class="oe_edit_only"/>
+                            <field name="name"/>
+                        </h1>
+                        <h3>
+                            <field name="ref" readonly="1"/>
+                        </h3>
+                    </div>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="dob"/>
                             <field name="age"/>
                             <field name="phnum"/>
-                            <field name="gender"/>
+                            <field name="gender" invisible="context.get('hide_gender')"/>
                         </group>
                         <group>
                             <field name="email"/>
                             <field name="city"/>
                             <field name="address"/>
+                            <field name="tags" widget="many2many_tags" options="{'color_field': 'color_pick'}"/>
+                            <field name="call_count"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="parent"
+                                   attrs="{'invisible': [('age', '>', 18)], 'required': [('age', '&lt;',18)]}"/>
+                            <field name="marital_status"
+                                   attrs="{'required': [('age', '>', 18)], 'invisible': [('age','&lt;', 18)]}"/>
+                            <field name="partner" attrs="{'invisible': [('age','&lt;', 18)],
+                                   'readonly': [('marital_status', '=', 'single')],
+                                    'required': [('marital_status', '=', 'married')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Call details" name="call_details">
+                            <field name="call_ids" readonly="1"/>
+                        </page>
+                    </notebook>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </sheet>
             </form>
         </field>
@@ -55,6 +112,9 @@
                     <filter name="group_city" string="City" context="{'group_by': 'city'}"/>
                     <filter name="group_age" string="Age" context="{'group_by': 'age'}"/>
                 </group>
+                <searchpanel>
+                    <field name="gender" string="Categories" select="multi" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -62,9 +122,10 @@
         <field name="name">Details</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">person.details</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,activity</field>
         <field name="context">{}</field>
         <field name="help" type="html">
+
             <p class="o_view_nocontent_smiling_face">
                 PLEASE create your first contact !!!....
             </p>

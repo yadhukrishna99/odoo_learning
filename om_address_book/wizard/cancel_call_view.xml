@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_cancel_call_form" model="ir.ui.view">
+        <field name="name">cancel.call.form</field>
+        <field name="model">cancel.call.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="contact_id"/>
+                        <field name="reason"/>
+                    </group>
+                    <group>
+                        <field name="cancel_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_cancellation" type="object"
+                            string="Cancel Call" class="btn-primary" data-hotkey="q"/>
+                    <button special="cancel" string="Discard" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cancel_call" model="ir.actions.act_window">
+        <field name="name">Cancel Call</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cancel.call.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+
+    </record>
+
+    <menuitem name="Cancel Call"
+              id="menu_cancel_call"
+              action="action_cancel_call"
+              parent="menu_call_details"
+              sequence="10"/>
+</odoo>
