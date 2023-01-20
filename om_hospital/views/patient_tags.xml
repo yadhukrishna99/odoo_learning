@@ -46,6 +46,6 @@
     </record>
 
     <menuitem name="Configurations" id="menu_conf" parent="menu_hospital" sequence="15">
-        <menuitem name="Tags" id="menu_tags_master" action="action_patient_tags" sequence="0"/>
+        <menuitem name="Tags" id="menu_tags_master" action="action_patient_tags" sequence="10"/>
     </menuitem>
 </odoo>

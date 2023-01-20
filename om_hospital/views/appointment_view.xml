@@ -58,7 +58,7 @@
                 <groupby name="patient_id">
                     <field name="age"/>
                     <button name="action_test" string="Click me" type="object" class="oe_highlight"
-                            attrs="{'invisible':[('age', '&lt;', 18)]}"/>
+                            attrs="{'invisible': [('age', '&lt;', 18)]}"/>
                     <button name="edit" string="Edit" type="edit" class="oe_highlight"/>
                 </groupby>
                 <groupby name="doctor_id">
@@ -92,7 +92,7 @@
                 <sheet>
                     <div>
                         <h1>
-                            <field name="appointment_id"/>
+                            <field name="appointment_id" readonly="1"/>
                         </h1>
                         <h2>
                             <field name="priority" widget="priority"/>

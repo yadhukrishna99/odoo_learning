@@ -13,9 +13,4 @@
               id="menu_appointment"
               parent="menu_hospital"
               sequence="10"/>
-<!--    <menuitem name="Configurations"-->
-<!--              id="menu_conf"-->
-<!--              parent="menu_hospital"-->
-<!--              sequence="15"/>-->
-
 </odoo>
