@@ -1,6 +1,7 @@
 from datetime import date
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from dateutil import relativedelta
 
 
 class HospitalPatient(models.Model):
@@ -11,7 +12,8 @@ class HospitalPatient(models.Model):
     name = fields.Char(string='Name', tracking=True)
     dob = fields.Date(string="Date Of Birth")
     ref = fields.Char(string='Reference', tracking=True)
-    age = fields.Integer(string="Age", compute="_compute_age", tracking=True, store=True)
+    age = fields.Integer(string="Age", compute="_compute_age", inverse="inverse_compute_age", store=True, tracking=True)
+# search="search_age" is used if we want to search a computed field, but here i already stored my field in the database
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender", tracking=True)
     active = fields.Boolean(string='Active', default=True, tracking=True)
     appointment_ids = fields.One2many('hospital.appointment', 'patient_id', string="Appointments")
@@ -60,6 +62,23 @@ class HospitalPatient(models.Model):
                 rec.age = today.year - rec.dob.year
             else:
                 rec.age = 0
+
+    @api.depends('age')
+    def inverse_compute_age(self):
+        for rec in self:
+            today = date.today()
+            rec.dob = today - relativedelta.relativedelta(years=rec.age)
+
+    # def search_age(self, operator, value):
+    # here self is a model, since we are searching for a match in a model, so we cannot iterate using a for loop
+    #         print('value...', value)
+    #         date_of_birth = date.today() - relativedelta.relativedelta(years=value)
+    #         start_of_year = date_of_birth.replace(day=1, month=1)
+    #         end_of_year = date_of_birth.replace(day=31, month=12)
+    #         print('start...', start_of_year)
+    #         print('end...', end_of_year)
+    #         return [('dob', '>=', start_of_year), ('dob', '<=', end_of_year)]
+
 
     def name_get(self):
         return [(rec.id, "[%s] %s" % (rec.ref, rec.name)) for rec in self]
