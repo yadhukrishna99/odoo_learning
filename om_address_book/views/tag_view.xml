@@ -46,6 +46,6 @@
         </field>
     </record>
     <menuitem name="Configurations" id="menu_config" parent="menu_address_book" sequence="20">
-        <menuitem name="Tags" id="menu_tags" action="action_contact_tags" sequence="0"/>
+        <menuitem name="Tags" id="menu_tags" action="action_contact_tags" sequence="10"/>
     </menuitem>
 </odoo>

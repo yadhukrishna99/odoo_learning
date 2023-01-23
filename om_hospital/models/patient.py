@@ -24,6 +24,7 @@ class HospitalPatient(models.Model):
     marital_status = fields.Selection([('married', 'Married'), ('single', 'Single')], string="Marital Status")
     partner = fields.Char(string="Partner Name")
 
+    @api.depends('appointment_ids')
     def _compute_appointment_count(self):
         for rec in self:
             rec.appointment_count = self.env['hospital.appointment'].search_count([('patient_id', '=', rec.name)])

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_call_detail" model="ir.sequence">
+            <field name="name">Call Detail</field>
+            <field name="code">call.detail</field>
+            <field name="prefix">CD</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

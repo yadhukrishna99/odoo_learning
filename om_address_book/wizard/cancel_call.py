@@ -2,6 +2,8 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from dateutil import relativedelta
+from datetime import date
 
 
 class CancelCallWizard(models.TransientModel):
@@ -24,8 +26,12 @@ class CancelCallWizard(models.TransientModel):
     cancel_date = fields.Date(string="Cancel Date")
 
     def action_cancellation(self):
+        cancel_day = self.env['ir.config_parameter'].get_param('om_address_book.cancel_day')
+        allowed_day = self.contact_id.call_time + relativedelta.relativedelta(days=int(cancel_day))
         if self.contact_id.call_time == self.cancel_date:
             raise ValidationError(_("Cannot cancel the call record on the same date the call record created!!"))
+        elif date.today() < allowed_day:
+            raise ValidationError(_("Cannot cancel the call record before 10 days of recording the call call!!"))
         elif self.contact_id.state == 'in_consultation':
             self.contact_id.state = 'cancelled'
 

@@ -58,7 +58,7 @@
                             <field name="dob"/>
                             <field name="age"/>
                             <field name="phnum"/>
-                            <field name="gender" invisible="context.get('hide_gender')"/>
+                            <field name="gender" invisible="context.get('hide_gender')" widget="radio"/>
                         </group>
                         <group>
                             <field name="email"/>
@@ -103,6 +103,7 @@
                        filter_domain="['|','|',('name', 'ilike', self),('city', 'ilike', self),('gender', 'ilike', self)]"/>
                 <field name="city" string="City"/>
                 <field name="gender" string="Gender"/>
+                <field name="age"/>
                 <filter name="filter_male" string="Male" domain="[('gender' , '=' , 'male')]"/>
                 <filter name="filter_female" string="Female" domain="[('gender' , '=' , 'female')]"/>
                 <separator/>

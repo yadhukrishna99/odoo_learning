@@ -25,6 +25,10 @@
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
                 <button name="action_cancelled" type="object" class="fa fa-times btn-danger"
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
+                <groupby name="contact">
+                    <button name="edit" string="Edit" type="edit" class="oe_highlight"/>
+                    <button name="action_click" string="Click Me" type="object"/>
+                </groupby>
             </tree>
         </field>
     </record>
@@ -49,10 +53,14 @@
                         <h1>
                             <field name="priority" widget="priority"/>
                         </h1>
+                        <h2>
+                            <field name="call_reference" readonly="1"/>
+                        </h2>
                     </div>
                     <group>
                         <group>
                             <field name="contact" default_focus="1"/>
+                            <field name="ref" readonly="1" force_save="1"/>
                             <field name="gender"/>
                             <field name="phnum"/>
                         </group>

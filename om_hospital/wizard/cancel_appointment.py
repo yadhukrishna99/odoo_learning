@@ -37,6 +37,11 @@ class CancelAppointmentWizard(models.TransientModel):
             raise ValidationError(_("Appointment time is less than 5days from today, you cannot cancel this booking now"))
         else:
             self.appointment_id.state = 'cancelled'
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+            }
+
 
 
 

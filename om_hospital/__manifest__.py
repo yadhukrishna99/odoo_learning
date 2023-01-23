@@ -26,6 +26,7 @@ This module contains features to manage an entire hospital
         'views/appointment_view.xml',
         'views/patient_tags.xml',
         'views/res_config_settings_views.xml',
+        'views/operation_view.xml',
     ],
     'demo': [],
     'installable': True,

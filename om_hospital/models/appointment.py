@@ -7,6 +7,7 @@ class HospitalAppointment(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Appointments"
     _rec_name = "appointment_id"
+    _order = 'id desc'
     # since there is no name field in this model, we are adding the _rec_name here to take a specific field as name
 
     patient_id = fields.Many2one('hospital.patient', string="Patient", ondelete="restrict")
@@ -33,6 +34,7 @@ class HospitalAppointment(models.Model):
     pharmacy_line_ids = fields.One2many('appointment.pharmacy.lists', 'appointment_id', string="Pharmacy lines")
     show_sales_price = fields.Boolean(string="Show sales price")
     appointment_id = fields.Char()
+    operation = fields.Many2one('hospital.operation', string="Operation")
 
     @api.model
     def create(self, val):

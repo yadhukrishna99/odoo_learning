@@ -6,9 +6,11 @@ class CallDetails(models.Model):
     _name = "call.details"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Call Details"
-    _rec_name = 'contact'
+    _rec_name = 'call_reference'
 
     contact = fields.Many2one('person.details', string="Name", ondelete="cascade")
+    ref = fields.Char(string="Reference")
+    call_reference = fields.Char(string="Call Reference")
     gender = fields.Selection(related='contact.gender')
     call_time = fields.Date(string='Call Time', default=fields.date.today())
     phnum = fields.Char(string='Contact Number', tracking=True)
@@ -28,11 +30,23 @@ class CallDetails(models.Model):
     @api.onchange('contact')
     def onchange_contact(self):
         self.phnum = self.contact.phnum
+        self.ref = self.contact.ref
 
     def unlink(self):
         if self.state == 'in_consultation' or self.state == 'cancelled':
             return super().unlink()
         raise ValidationError(_("Cannot cancel the done calls"))
+
+    @api.model
+    def create(self, vals):
+        vals['call_reference'] = self.env['ir.sequence'].next_by_code('call.detail')
+        return super().create(vals)
+
+    def write(self, vals):
+        if not self.call_reference and not vals.get('call_reference'):
+            vals['call_reference'] = self.env['ir.sequence'].next_by_code('call.detail')
+        return super().write(vals)
+
 
     def object_button(self):
         print("Button Clicked!!")

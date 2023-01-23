@@ -1,6 +1,7 @@
 from datetime import date
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from dateutil import relativedelta
 
 class PersonDetails(models.Model):
     _name = "person.details"
@@ -10,7 +11,7 @@ class PersonDetails(models.Model):
     name = fields.Char(string='Name', tracking=True)
     ref = fields.Char(string="Reference")
     dob = fields.Date(string='Date of birth', tracking=True)
-    age = fields.Integer(string="Age", compute='_compute_age', tracking=True)
+    age = fields.Integer(string="Age", compute='_compute_age', inverse='_compute_dob', tracking=True, search='search_age')
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender", tracking=True)
     address = fields.Char(string='Address', tracking=True)
     city = fields.Char(string='City', tracking=True)
@@ -56,12 +57,27 @@ class PersonDetails(models.Model):
     def _compute_age(self):
         for rec in self:
             if rec.dob:
-              today = date.today()
-              rec.age = today.year - rec.dob.year
+                today = date.today()
+                rec.age = today.year - rec.dob.year
             else:
                 rec.age = 0
+
+    @api.depends('age')
+    def _compute_dob(self):
+        for rec in self:
+            dob = date.today() - relativedelta.relativedelta(years=rec.age)
+            rec.dob = dob.replace(month=rec.dob.month, day=rec.dob.day)
 
     @api.depends('call_ids')
     def _compute_call(self):
         for rec in self:
             rec.call_count = self.env['call.details'].search_count([('contact', '=', rec.name)])
+
+    def search_age(self, operator, value):
+        date_of_birth = date.today() - relativedelta.relativedelta(years=value)
+        start = date_of_birth.replace(day=1, month=1)
+        end = date_of_birth.replace(day=31, month=12)
+        return [('dob', '>=', start), ('dob', '<=', end)]
+
+    def action_click(self):
+        return
