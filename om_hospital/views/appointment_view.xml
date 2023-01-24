@@ -6,7 +6,18 @@
     <!--    decoration-warning -  dark yellow-->
     <!--    decoration-danger  -  red-->
     <!--    decoration-success  -  green-->
-
+    <record id="action_mark_as_done" model="ir.actions.server">
+        <field name="name">Mark as done</field>
+        <field name="model_id" ref="model_hospital_appointment"/>
+        <field name="binding_model_id" ref="model_hospital_appointment"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            for rec in records:
+                if rec.state == 'in_consultation':
+                    rec.action_done()
+        </field>
+    </record>
     <record id="view_hospital_appointment_activity" model="ir.ui.view">
         <field name="name">hospital.appointment.activity</field>
         <field name="model">hospital.appointment</field>
@@ -34,7 +45,6 @@
                   decoration-danger="state in 'cancelled'" sample="1" multi_edit="1">
                 <header>
                     <button name="action_in_consultation" string="In Consultation" type="object"/>
-                    <button name="action_done" string="Done" type="object"/>
                     <button name="action_draft" string="Reset to draft" type="object"/>
                     <button name="action_cancelled" string="Cancel" type="object" context="{'hide_appointment':1}"/>
                 </header>
@@ -82,9 +92,9 @@
                             class="btn-success" states="in_consultation" data-hotkey="p"/>
                     <button name="action_draft" string="Reset to draft" type="object"
                             class="oe_highlight" states="cancelled" data-hotkey="r"/>
-<!--                    <button name="%(om_hospital.action_cancel_appointment)d" string="Cancel" type="action"-->
-<!--                                states="draft,in_consultation" context="{'default_appointment_id': active_id}"-->
-<!--                                data-hotkey="z"/>-->
+                    <!--                    <button name="%(om_hospital.action_cancel_appointment)d" string="Cancel" type="action"-->
+                    <!--                                states="draft,in_consultation" context="{'default_appointment_id': active_id}"-->
+                    <!--                                data-hotkey="z"/>-->
                     <button name="action_cancelled" string="Cancel" type="object" states="draft,in_consultation"
                             class="btn-danger" context="{'hide_appointment':1}"
                             data-hotkey="z"/>

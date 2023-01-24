@@ -23,6 +23,11 @@ class HospitalPatient(models.Model):
     parent = fields.Char(string="Parent Name")
     marital_status = fields.Selection([('married', 'Married'), ('single', 'Single')], string="Marital Status")
     partner = fields.Char(string="Partner Name")
+    operation_records = fields.One2many('hospital.operation', 'patient', string="Operation Record")
+    is_birthday = fields.Boolean(string="Birthday", compute="_compute_is_birthday")
+    phone = fields.Char(string="Phone number")
+    email = fields.Char(string="Email")
+    website = fields.Char(string="Website")
 
     @api.depends('appointment_ids')
     def _compute_appointment_count(self):
@@ -79,6 +84,17 @@ class HospitalPatient(models.Model):
     #         print('start...', start_of_year)
     #         print('end...', end_of_year)
     #         return [('dob', '>=', start_of_year), ('dob', '<=', end_of_year)]
+
+    @api.depends('dob')
+    def _compute_is_birthday(self):
+        for rec in self:
+            is_birthday = False
+            if rec.dob:
+                today = date.today()
+                if today.day == rec.dob.day and today.month == rec.dob.month:
+                    is_birthday = True
+        rec.is_birthday = is_birthday
+
 
 
     def name_get(self):

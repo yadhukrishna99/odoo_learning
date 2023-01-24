@@ -21,6 +21,14 @@
         <field name="arch" type="xml">
             <form delete="0" create="0">
                 <sheet>
+                    <div class="alert alert-success text-center o_form_header"
+                         attrs="{'invisible': [('is_birthday', '=', False)]}">
+                        <a class="close" data-dismiss="alert" href="#">X</a>
+                        <div>
+                            <strong>BIRTHDAY !</strong>
+                        </div>
+                        <div>WISH <field name="name"/></div>
+                     </div>
                     <field name="image" widget="image" class="oe_avatar"/>
                     <div class="oe_title">
                         <h2>
@@ -34,6 +42,7 @@
                     <group>
                         <group>
                             <field name="dob" class="oe_edit_only"/>
+                            <field name="is_birthday" invisible="1"/>
                             <field name="age"/>
                             <field name="appointment_count"/>
                         </group>
@@ -51,6 +60,17 @@
                             <field name="partner" attrs="{'readonly': [('marital_status', '=', 'single')],
                                    'required': [('marital_status', '=', 'married')],
                                    'invisible': [('age', '&lt;', 18)]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="phone" widget="phone"/>
+                        </group>
+                        <group>
+                            <field name="email" widget="email"/>
+                        </group>
+                        <group>
+                            <field name="website" widget="url"/>
                         </group>
                     </group>
                     <notebook>
@@ -85,6 +105,9 @@
                                     </group>
                                 </form>
                             </field>
+                        </page>
+                        <page string="Operations" name="operations">
+                            <field name="operation_records" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>

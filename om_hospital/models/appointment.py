@@ -6,7 +6,6 @@ class HospitalAppointment(models.Model):
     _name = "hospital.appointment"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Appointments"
-    _rec_name = "appointment_id"
     _order = 'id desc'
     # since there is no name field in this model, we are adding the _rec_name here to take a specific field as name
 
@@ -67,7 +66,6 @@ class HospitalAppointment(models.Model):
 
     def action_done(self):
         for rec in self:
-            if rec.state == 'in_consultation':
                 rec.state = 'done'
 
     def action_draft(self):
@@ -85,6 +83,9 @@ class HospitalAppointment(models.Model):
             if rec.state == 'draft' or rec.state == 'in_consultation':
                 action = self.env.ref('om_hospital.action_cancel_appointment').read()[0]
                 return action
+
+    def name_get(self):
+        return [(rec.id, "[%s] %s" % (rec.appointment_id, rec.patient_id.name)) for rec in self]
 
 
 class AppointmentPharmacyLists(models.Model):
