@@ -21,14 +21,24 @@
         <field name="arch" type="xml">
             <form delete="0" create="0">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_appointments" icon="fa-star">
+                            <field string="Appointments" name="appointment_count" widget="statinfo"/>
+                        </button>
+                         <button class="oe_stat_button2" type="object" name="action_view_operations" icon="fa-usd">
+                            <field string="Operations" name="operation_count" widget="statinfo"/>
+                        </button>
+                    </div>
                     <div class="alert alert-success text-center o_form_header"
                          attrs="{'invisible': [('is_birthday', '=', False)]}">
                         <a class="close" data-dismiss="alert" href="#">X</a>
                         <div>
                             <strong>BIRTHDAY !</strong>
                         </div>
-                        <div>WISH <field name="name"/></div>
-                     </div>
+                        <div>WISH
+                            <field name="name"/>
+                        </div>
+                    </div>
                     <field name="image" widget="image" class="oe_avatar"/>
                     <div class="oe_title">
                         <h2>
@@ -44,7 +54,6 @@
                             <field name="dob" class="oe_edit_only"/>
                             <field name="is_birthday" invisible="1"/>
                             <field name="age"/>
-                            <field name="appointment_count"/>
                         </group>
                         <group>
                             <field name="gender" invisible="context.get('hide_gender')" widget="radio"/>

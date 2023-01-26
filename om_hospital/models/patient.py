@@ -19,7 +19,7 @@ class HospitalPatient(models.Model):
     appointment_ids = fields.One2many('hospital.appointment', 'patient_id', string="Appointments")
     image = fields.Image(string="Image")
     tag_ids = fields.Many2many('patient.tags', 'hospital_patient_tags_rel', 'patient_id', 'tag_id', string="Tags")
-    appointment_count = fields.Integer(string="Appointment count", compute="_compute_appointment_count", store=True)
+    appointment_count = fields.Integer(string="Appointment count", compute="_compute_appointment_count")
     parent = fields.Char(string="Parent Name")
     marital_status = fields.Selection([('married', 'Married'), ('single', 'Single')], string="Marital Status")
     partner = fields.Char(string="Partner Name")
@@ -28,11 +28,33 @@ class HospitalPatient(models.Model):
     phone = fields.Char(string="Phone number")
     email = fields.Char(string="Email")
     website = fields.Char(string="Website")
+    operation_count = fields.Integer(string="Operation Count", compute='_compute_operation_count')
 
     @api.depends('appointment_ids')
     def _compute_appointment_count(self):
         for rec in self:
             rec.appointment_count = self.env['hospital.appointment'].search_count([('patient_id', '=', rec.name)])
+
+    # this is a compute_method using read_group method
+    # @api.depends('appointment_ids')
+    # def _compute_appointment_count(self):
+    #         print("...self", self)
+    #         appointment_group = self.env['hospital.appointment'].read_group(domain=[('state', '=', 'done')],
+    #                                                                     fields=['patient_id'], groupby=['patient_id'])
+    #         for app in appointment_group:
+    #             print("...app", app)
+    #             patient_id = app.get('patient_id')[0]
+    #             patient_rec = self.browse(patient_id)
+    #             print("...rec", patient_rec)
+    #             patient_rec.appointment_count = app['patient_id_count']
+    #             self -= patient_rec
+    #         self.appointment_count = 0
+
+    @api.depends('operation_records')
+    def _compute_operation_count(self):
+        for rec in self:
+            rec.operation_count = self.env['hospital.operation'].search_count([('patient', '=', rec.id)])
+
 
     @api.constrains('dob')
     def check_dob(self):
@@ -95,13 +117,34 @@ class HospitalPatient(models.Model):
                     is_birthday = True
         rec.is_birthday = is_birthday
 
-
-
     def name_get(self):
         return [(rec.id, "[%s] %s" % (rec.ref, rec.name)) for rec in self]
 
     def action_test(self):
         print("Clicked...")
         return
+
+    def action_view_appointments(self):
+        print(self.id)
+        return {
+            'name': _('Appointments'),
+            'res_model': 'hospital.appointment',
+            'view_mode': 'tree,form,calendar',
+            'context': {'default_patient_id': self.id},
+            'domain': [('patient_id', '=', self.id)],
+            'target': 'current',
+            'type': 'ir.actions.act_window',
+        }
+
+    def action_view_operations(self):
+        return {
+            'name': _('Operations'),
+            'res_model': 'hospital.operation',
+            'view_mode': 'tree,form',
+            'context': {'default_patient': self.id},
+            'domain': [('patient', '=', self.id)],
+            'target': 'current',
+            'type': 'ir.actions.act_window',
+        }
 
 

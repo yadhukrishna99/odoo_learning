@@ -1,3 +1,4 @@
+import random
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -34,6 +35,8 @@ class HospitalAppointment(models.Model):
     show_sales_price = fields.Boolean(string="Show sales price")
     appointment_id = fields.Char()
     operation = fields.Many2one('hospital.operation', string="Operation")
+    progress = fields.Integer(string="Progress", compute='_compute_progress')
+    duration = fields.Float(string="Duration")
 
     @api.model
     def create(self, val):
@@ -66,7 +69,7 @@ class HospitalAppointment(models.Model):
 
     def action_done(self):
         for rec in self:
-                rec.state = 'done'
+            rec.state = 'done'
 
     def action_draft(self):
         for rec in self:
@@ -86,6 +89,19 @@ class HospitalAppointment(models.Model):
 
     def name_get(self):
         return [(rec.id, "[%s] %s" % (rec.appointment_id, rec.patient_id.name)) for rec in self]
+
+    @api.depends('state')
+    def _compute_progress(self):
+        for rec in self:
+            if rec.state == 'draft':
+                progress = random.randrange(0, 25)
+            elif rec.state == 'in_consultation':
+                progress = random.randrange(25, 75)
+            elif rec.state == 'done':
+                progress = 100
+            else:
+                progress = 0
+            rec.progress = progress
 
 
 class AppointmentPharmacyLists(models.Model):
