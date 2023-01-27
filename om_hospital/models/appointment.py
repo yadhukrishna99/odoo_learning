@@ -8,6 +8,7 @@ class HospitalAppointment(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Appointments"
     _order = 'id desc'
+    _rec_name = 'appointment_id'
     # since there is no name field in this model, we are adding the _rec_name here to take a specific field as name
 
     patient_id = fields.Many2one('hospital.patient', string="Patient", ondelete="restrict")
@@ -87,8 +88,6 @@ class HospitalAppointment(models.Model):
                 action = self.env.ref('om_hospital.action_cancel_appointment').read()[0]
                 return action
 
-    def name_get(self):
-        return [(rec.id, "[%s] %s" % (rec.appointment_id, rec.patient_id.name)) for rec in self]
 
     @api.depends('state')
     def _compute_progress(self):

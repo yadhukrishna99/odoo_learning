@@ -21,15 +21,32 @@ class PersonDetails(models.Model):
     call_ids = fields.One2many('call.details', 'contact', string="Call details")
     image = fields.Image(string="Photo")
     tags = fields.Many2many('contact.tags', 'contact_tags_rel', 'contact_id', 'tag_id', string="Tags")
-    call_count = fields.Integer(string="call appointment", compute='_compute_call', store=True)
+    call_count = fields.Integer(string="call Count", compute='_compute_call', store=True)
     parent = fields.Char(string="Parent name")
     marital_status = fields.Selection([('single', 'Single'), ('married', 'Married')], string="Marital status")
     partner = fields.Char(string="Partner")
+    is_birthday = fields.Boolean(string="Birthday", compute='_compute_birthday')
+    phone_num = fields.Char(string="Phone No: ")
+    email_id = fields.Char(string="Email")
+    website = fields.Char(string="Website")
+    task_ids = fields.One2many('contact.tasks', 'contact', string="Tasks")
+    task_count = fields.Integer(string="Task Count", compute='_compute_task')
 
     @api.constrains('dob')
     def check_dob(self):
         if self.dob and self.dob > fields.date.today():
             raise ValidationError(_("Invalid dob"))
+
+    @api.depends('dob')
+    def _compute_birthday(self):
+        for rec in self:
+            birthday = False
+            if rec.dob:
+                today = date.today()
+                if today.day == rec.dob.day and today.month == rec.dob.month:
+                    birthday = True
+            rec.is_birthday = birthday
+
 
     @api.ondelete(at_uninstall=False)
     def check_call(self):
@@ -72,6 +89,20 @@ class PersonDetails(models.Model):
     def _compute_call(self):
         for rec in self:
             rec.call_count = self.env['call.details'].search_count([('contact', '=', rec.name)])
+
+    # this is a compute_method using read_group method
+    @api.depends('task_ids')
+    def _compute_task(self):
+            print("...self", self)
+            task_group = self.env['contact.tasks'].read_group(domain=[], fields=['contact'], groupby=['contact'])
+            for app in task_group:
+                print("...app", app)
+                contact_id = app.get('contact')[0]
+                contact_rec = self.browse(contact_id)
+                print("...rec", contact_rec)
+                contact_rec.task_count = app['contact_count']
+                self -= contact_rec
+            self.task_count = 0
 
     def search_age(self, operator, value):
         date_of_birth = date.today() - relativedelta.relativedelta(years=value)

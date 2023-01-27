@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <record id="view_call_tree" model="ir.ui.view">
         <field name="name">call.tree</field>
         <field name="model">call.details</field>
@@ -25,11 +24,26 @@
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
                 <button name="action_cancelled" type="object" class="fa fa-times btn-danger"
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
+                <field name="progress" widget="progressbar"/>
                 <groupby name="contact">
                     <button name="edit" string="Edit" type="edit" class="oe_highlight"/>
                     <button name="action_click" string="Click Me" type="object"/>
                 </groupby>
             </tree>
+        </field>
+    </record>
+
+    <record id="view_call_calendar" model="ir.ui.view">
+        <field name="name">call.calendar</field>
+        <field name="model">call.details</field>
+        <field name="arch" type="xml">
+            <calendar string="Call Details" date_start="call_time" date_delay="duration" mode="month"
+                      color="state" quick_add="False" hide_time="True" event_limit="3" event_open_popup="True"
+                      form_view_id="%(om_address_book.view_call_form)d">
+                <field name="contact" filters="1" invisible="1" avatar_field="image"/>
+                <field name="call_connector"/>
+                <field name="state" filters="1" invisible="1"/>
+            </calendar>
         </field>
     </record>
 
@@ -67,7 +81,9 @@
                         <group>
                             <field name="call_connector" widget="many2one_avatar_user"/>
                             <field name="call_time" help="The time your call recorded"/>
+                            <field name="duration"/>
                             <field name="sales_price"/>
+                            <field name="tasks"/>
                             <field name="active" invisible='1'/>
                             <button name="object_button" string="Object Button" type="object"
                                     class="oe_highlight"
@@ -133,7 +149,7 @@
         <field name="name">Call Details</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">call.details</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,calendar</field>
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

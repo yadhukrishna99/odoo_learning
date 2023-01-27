@@ -15,7 +15,7 @@
         <field name="code">
             for rec in records:
                if rec.state == 'in_consultation':
-                 rec.action_done()
+                  rec.action_done()
         </field>
     </record>
     <record id="view_hospital_appointment_activity" model="ir.ui.view">

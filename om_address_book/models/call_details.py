@@ -1,3 +1,5 @@
+import random
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -6,7 +8,7 @@ class CallDetails(models.Model):
     _name = "call.details"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Call Details"
-    _rec_name = 'call_reference'
+    _order = 'id desc'
 
     contact = fields.Many2one('person.details', string="Name", ondelete="cascade")
     ref = fields.Char(string="Reference")
@@ -26,6 +28,9 @@ class CallDetails(models.Model):
     active = fields.Boolean(string="Active", default=True)
     product_ids = fields.One2many('items.list', 'person_ids', string="Products Needed")
     sales_price = fields.Boolean(string="Sales price", default=False)
+    tasks = fields.Many2one('contact.tasks', string="Tasks")
+    progress = fields.Integer(string="Progress", compute='_compute_progress')
+    duration = fields.Float(string="Duration")
 
     @api.onchange('contact')
     def onchange_contact(self):
@@ -71,6 +76,18 @@ class CallDetails(models.Model):
     def action_cancelled(self):
         action = self.env.ref('om_address_book.action_cancel_call').read()[0]
         return action
+
+    def _compute_progress(self):
+        for rec in self:
+            if rec.state == 'in_consultation':
+                rec.progress = 50
+            elif rec.state == 'done':
+                rec.progress = 100
+            else:
+                rec.progress = 0
+
+    def name_get(self):
+        return [(rec.id, "[%s] %s" % (rec.call_reference, rec.contact.name)) for rec in self]
 
 
 class ItemsList(models.Model):

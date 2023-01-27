@@ -34,5 +34,9 @@ class CancelCallWizard(models.TransientModel):
             raise ValidationError(_("Cannot cancel the call record before 10 days of recording the call call!!"))
         elif self.contact_id.state == 'in_consultation':
             self.contact_id.state = 'cancelled'
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'reload',
+            }
 
 

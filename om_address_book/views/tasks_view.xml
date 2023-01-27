@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_contact_tasks_tree" model="ir.ui.view">
+        <field name="name">contact.tasks.tree</field>
+        <field name="model">contact.tasks</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="reference" widget="handle"/>
+                <field name="task"/>
+                <field name="contact"/>
+                <field name="record"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_contact_tasks_form" model="ir.ui.view">
+        <field name="name">contact.tasks.form</field>
+        <field name="model">contact.tasks</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="reference"/>
+                            <field name="task"/>
+                            <field name="contact"/>
+                            <field name="record"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_contact_tasks" model="ir.actions.act_window">
+        <field name="name">Contact Tasks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">contact.tasks</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Contact task!!!
+            </p>
+        </field>
+    </record>
+    <menuitem name="Tasks"
+              id="menu_tasks"
+              parent="menu_config"
+              sequence="20"
+              action="action_contact_tasks">
+    </menuitem>
+</odoo>

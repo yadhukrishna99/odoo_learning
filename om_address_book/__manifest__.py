@@ -23,6 +23,7 @@ This module contains features to manage the information of your loved ones....
         'views/call_details.xml',
         'views/tag_view.xml',
         'views/res_config_settings_views.xml',
+        'views/tasks_view.xml',
     ],
     'demo': [ ],
     'installable': True,
