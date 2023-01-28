@@ -66,7 +66,7 @@
                 <field name="appointment_id"/>
                 <field name="patient_id" widget="many2one_avatar"/>
                 <field name="ref" optional="show"/>
-                <field name="gender" optional="hide"/>
+                <field name="gender" optional="hide" decoration-bf="1" decoration-it="1" decoration-info="1"/>
                 <field name="doctor_id" widget="many2one_avatar_user"/>
                 <field name="booking_date" optional="hide"/>
                 <field name="appointment_time"/>
@@ -90,6 +90,7 @@
                 <groupby name="doctor_id">
                     <button name="edit" string="Edit" type="edit" class="oe_highlight"/>
                 </groupby>
+                <field name="total_value" decoration-bf="1"/>
                 <field name="progress" widget="progressbar"/>
             </tree>
         </field>
@@ -139,9 +140,12 @@
                             <field name="show_sales_price"/>
                             <field name="booking_date"/>
                             <field name="active" invisible='1'/>
-                            <button name="object_button" string="Object Button" type="object" class="oe_highlight"
-                                    help="Just prints the statement in the log"
-                                    confirm="Are you sure to execute the python code?"
+                            <field name="url"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_value"/>
+                            <button name="object_button" string="Redirect Button" type="object" class="oe_highlight"
+                                    help="You will be redirected to the url given in the url field"
+                                    confirm="Are you sure to be redirected to the url in the url field?"
                                     groups="base.group_no_one"/>
                             <button name="%(om_hospital.action_hospital_patient)d" string="Action Button" type="action"
                                     class="oe_highlight"
@@ -164,16 +168,18 @@
                             <field name="pharmacy_line_ids">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
+                                    <field name="price_unit" widget="monetary"
+                                           attrs="{'column_invisible': [('parent.show_sales_price', '=', True)]}"/>
                                     <field name="qty"/>
-                                    <field name="price_unit"
-                                           attrs="{'column_invisible': [('parent.show_sales_price', '=', False)]}"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="price_subtotal" sum="Total"/>
                                 </tree>
                                 <form>
                                     <group>
                                         <field name="product_id"/>
-                                        <field name="qty"/>
                                         <field name="price_unit"
-                                               attrs="{'column_invisible': [('parent.show_sales_price', '=', False)]}"/>
+                                               attrs="{'column_invisible': [('parent.show_sales_price', '=', True)]}"/>
+                                        <field name="qty"/>
                                     </group>
                                 </form>
                             </field>
