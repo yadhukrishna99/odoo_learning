@@ -114,6 +114,8 @@
                     <button name="action_cancelled" string="Cancel" type="object" states="draft,in_consultation"
                             class="btn-danger" context="{'hide_appointment':1}"
                             data-hotkey="z"/>
+                    <button name="action_whatsapp_msg" string="Message in whatsapp" type="object"
+                            class="oe-highlight" icon="fa-whatsapp" data-hotkey="w"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_consultation,done"/>
                     <!--                           options="{'clickable': '1'}"-->
                 </header>

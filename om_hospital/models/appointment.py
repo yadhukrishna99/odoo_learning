@@ -65,6 +65,17 @@ class HospitalAppointment(models.Model):
             'url': self.url
         }
 
+    def action_whatsapp_msg(self):
+        if not self.patient_id.phone:
+            raise ValidationError(_('Phone number is not available for this patient.'))
+        message = 'Hii *%s*. Your appointment number is *%s* fixed on date:*%s*. Come to India on the next flight.' % (self.patient_id.name, self.appointment_id, self.appointment_time)
+        whatsapp_url = 'https://api.whatsapp.com/send?phone=%s&text=%s' % (self.patient_id.phone, message)
+        return {
+            'type': 'ir.actions.act_url',
+            'target': 'new',
+            'url': whatsapp_url
+        }
+
     def action_in_consultation(self):
         for rec in self:
             if rec.state == 'draft':
