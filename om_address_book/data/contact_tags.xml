@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <data noupdate="1">
+        <record id="contact_tag_vvip" model="contact.tags" forcecreate="0">
+            <field name="tag_name">VVIP</field>
+        </record>
 
-    <record id="contact_tag_vvip" model="contact.tags">
-        <field name="tag_name">VVIP</field>
-    </record>
+        <record id="contact_tag_vip" model="contact.tags">
+            <field name="tag_name">VIP</field>
+        </record>
 
-    <record id="contact_tag_vip" model="contact.tags">
-        <field name="tag_name">VIP</field>
-    </record>
+        <record id="contact_tag_kid" model="contact.tags">
+            <field name="tag_name">KID</field>
+        </record>
 
-    <record id="contact_tag_kid" model="contact.tags">
-        <field name="tag_name">KID</field>
-    </record>
+        <record id="contact_tag_adult" model="contact.tags">
+            <field name="tag_name">ADULT</field>
+        </record>
 
-    <record id="contact_tag_adult" model="contact.tags">
-        <field name="tag_name">ADULT</field>
-    </record>
+        <record id="contact_tag_mr" model="contact.tags">
+            <field name="tag_name">Mr</field>
+            <field name="active" eval="False"/>
+        </record>
 
-    <record id="contact_tag_mr" model="contact.tags">
-        <field name="tag_name">Mr</field>
-        <field name="active" eval="False"/>
-    </record>
+        <record id="contact_tag_ms" model="contact.tags">
+            <field name="tag_name">Ms</field>
+            <field name="active" eval="False"/>
+        </record>
+    </data>
 
-    <record id="contact_tag_ms" model="contact.tags">
-        <field name="tag_name">Ms</field>
-        <field name="active" eval="False"/>
-    </record>
 </odoo>

@@ -5,7 +5,7 @@ class PatientTags(models.Model):
     _name = "patient.tags"
     _description = "Patient Tags"
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(string="Name", required=True, trim=False)
     active = fields.Boolean(string="Active", default=True)
     color = fields.Integer(string="Color")
     color_2 = fields.Char(string="Color 2")

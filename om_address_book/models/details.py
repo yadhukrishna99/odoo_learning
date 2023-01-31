@@ -8,15 +8,15 @@ class PersonDetails(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Person Details"
 
-    name = fields.Char(string='Name', tracking=True)
+    name = fields.Char(string='Name', tracking=1)
     ref = fields.Char(string="Reference")
-    dob = fields.Date(string='Date of birth', tracking=True)
+    dob = fields.Date(string='Date of birth', tracking=4)
     age = fields.Integer(string="Age", compute='_compute_age', inverse='_compute_dob', tracking=True, search='search_age')
-    gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender", tracking=True)
+    gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender", tracking=2)
     address = fields.Char(string='Address', tracking=True)
     city = fields.Char(string='City', tracking=True)
     phnum = fields.Char(string='Contact Number', tracking=True)
-    email = fields.Char(string='Email id', tracking=True)
+    email = fields.Char(string='Email id', tracking=3)
     active = fields.Boolean(string="Active", default=True)
     call_ids = fields.One2many('call.details', 'contact', string="Call details")
     image = fields.Image(string="Photo")
@@ -46,7 +46,6 @@ class PersonDetails(models.Model):
                 if today.day == rec.dob.day and today.month == rec.dob.month:
                     birthday = True
             rec.is_birthday = birthday
-
 
     @api.ondelete(at_uninstall=False)
     def check_call(self):

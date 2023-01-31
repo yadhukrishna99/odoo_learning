@@ -12,7 +12,7 @@
                     <button name="action_cancelled" string="Cancel" type="object"/>
                 </header>
                 <field name="contact"/>
-                <field name="gender"/>
+                <field name="gender" decoration-bf="1" decoration-it="1" decoration-info="1"/>
                 <field name="phnum" optional="hide"/>
                 <field name="call_connector" widget="many2one_avatar_user"/>
                 <field name="call_time" optional="show"/>
@@ -24,6 +24,8 @@
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
                 <button name="action_cancelled" type="object" class="fa fa-times btn-danger"
                         attrs="{'invisible':[('state', '!=', 'in_consultation')]}"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="value" decoration-bf="1"/>
                 <field name="progress" widget="progressbar"/>
                 <groupby name="contact">
                     <button name="edit" string="Edit" type="edit" class="oe_highlight"/>
@@ -59,6 +61,8 @@
                             class="oe_highlight" states="in_consultation"/>
                     <button name="action_cancelled" string="Cancel" type="object" states="in_consultation"/>
                     <!--                    options="{'clickable': '1'}"-->
+                    <button name="whatsapp_message" string="Message in whatsapp" type="object"
+                            class="oe_highlight"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="in_consultation,done"/>
                 </header>
@@ -85,10 +89,13 @@
                             <field name="sales_price"/>
                             <field name="tasks"/>
                             <field name="active" invisible='1'/>
-                            <button name="object_button" string="Object Button" type="object"
+                            <field name="currency_id" invisible="1"/>
+                            <field name="value"/>
+                            <field name="url"/>
+                            <button name="object_button" string="Redirect Button" type="object"
                                     class="oe_highlight"
-                                    help="Just prints the statement in the log"
-                                    confirm="Are you sure to execute the python code?"
+                                    help="Redirect you to an external url"
+                                    confirm="Are you sure you want to redirect to the above url?"
                                     groups="base.group_no_one"/>
                             <button name="%(om_address_book.action_details)d" string="Action Button" type="action"
                                     class="oe_highlight"
@@ -104,11 +111,13 @@
                         </page>
                         <page string="Products Needed" name="products_needed">
                             <field name="product_ids">
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="items"/>
                                     <field name="qaty"/>
-                                    <field name="price"
-                                           attrs="{'column_invisible': [('parent.sales_price', '=', False)]}"/>
+                                    <field name="price" widget="monetary"
+                                           attrs="{'column_invisible': [('parent.sales_price', '=', True)]}"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="sub_total" sum="Total"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -119,6 +128,7 @@
                                         <group>
                                             <field name="price"
                                                    attrs="{'column_invisible': [('parent.sales_price', '=', False)]}"/>
+                                            <field name="sub_total"/>
                                         </group>
                                     </group>
                                 </form>

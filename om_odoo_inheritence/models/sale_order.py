@@ -23,4 +23,10 @@ class SaleOrders(models.Model):
         super().action_draft()
         self.cancelled_user_id = None
 
+    def _prepare_invoice(self):
+        invoice_vals = super()._prepare_invoice()
+        invoice_vals['so_confirmed_user_id'] = self.confirmed_user_id.id
+        return invoice_vals
+
+
 

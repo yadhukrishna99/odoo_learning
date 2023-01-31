@@ -1,5 +1,4 @@
 import random
-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -31,6 +30,10 @@ class CallDetails(models.Model):
     tasks = fields.Many2one('contact.tasks', string="Tasks")
     progress = fields.Integer(string="Progress", compute='_compute_progress')
     duration = fields.Float(string="Duration")
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+    value = fields.Monetary(string='Value', compute='_compute_value')
+    url = fields.Char(string="Url")
 
     @api.onchange('contact')
     def onchange_contact(self):
@@ -52,15 +55,24 @@ class CallDetails(models.Model):
             vals['call_reference'] = self.env['ir.sequence'].next_by_code('call.detail')
         return super().write(vals)
 
-
     def object_button(self):
-        print("Button Clicked!!")
-        return {
-            'effect': {
-                'fadeout': 'slow',
-                'message': 'Successfuly printed the python statement in log',
-                'type': 'rainbow_man',
+        if self.url:
+            return {
+              'type': 'ir.actions.act_url',
+              'target': 'new',
+              'url': self.url
             }
+        raise ValidationError(_('Enter a url in the url field...'))
+
+    def whatsapp_message(self):
+        if not self.phnum:
+            raise ValidationError(_('Please provide a phone number'))
+        msg = 'Hii *%s*. Your call *%s* is fixed on *%s*.Please call me on time.' % (self.contact.name, self.call_reference, self.call_time)
+        url = 'https://api.whatsapp.com/send?phone=%s&text=%s' % (self.phnum, msg)
+        return{
+            'type': 'ir.actions.act_url',
+            'target': 'new',
+            'url': url
         }
 
     def action_in_consultation(self):
@@ -72,6 +84,13 @@ class CallDetails(models.Model):
         for rec in self:
             if rec.state == 'in_consultation':
                 rec.state = 'done'
+                return {
+                    'effect': {
+                        'fadeout': 'slow',
+                        'message': 'Successfuly printed the python statement in log',
+                        'type': 'rainbow_man',
+                    }
+                }
 
     def action_cancelled(self):
         action = self.env.ref('om_address_book.action_cancel_call').read()[0]
@@ -89,6 +108,13 @@ class CallDetails(models.Model):
     def name_get(self):
         return [(rec.id, "[%s] %s" % (rec.call_reference, rec.contact.name)) for rec in self]
 
+    @api.depends('product_ids')
+    def _compute_value(self):
+        for rec in self:
+            rec.value = 0
+            for line in rec.product_ids:
+                rec.value += line.sub_total
+
 
 class ItemsList(models.Model):
     _name = "items.list"
@@ -98,3 +124,11 @@ class ItemsList(models.Model):
     qaty = fields.Integer(string="Quantity", default=1)
     price = fields.Float(related="items.list_price")
     person_ids = fields.Many2one('call.details', string="Person IDs")
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+    sub_total = fields.Monetary(string="Sub Total", compute='_compute_subtotal', currency_field='currency_id')
+
+    @api.depends('qaty', 'price')
+    def _compute_subtotal(self):
+        for rec in self:
+            rec.sub_total = rec.qaty * rec.price
