@@ -15,9 +15,63 @@
         <field name="code">
             for rec in records:
                if rec.state == 'in_consultation':
-                  rec.action_done()
+                   rec.action_done()
         </field>
     </record>
+
+    <record id="view_hospital_appointment_kanban" model="ir.ui.view">
+        <field name="name">hospital.appointment.kanban</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="appointment_id"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="appointment_time"/>
+                <field name="activity_ids"/>
+                <field name="state"/>
+                <field name="total_value"/>
+                <field name="progress"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title">
+                                        <span>
+                                            <t t-esc="record.patient_id.value"/>
+                                        </span>
+                                    </strong>
+                                </div>
+                                <strong>
+                                    <field name="total_value" widget="monetary"/>
+                                </strong>
+                            </div>
+                            <div>
+                                <field name="doctor_id"/>
+                                <field name="doctor_id" widget="many2one_avatar_user"/>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left text-muted">
+                                    <span>
+                                        <t t-esc="record.appointment_id.value"/>
+                                        <t t-esc="record.appointment_time.value"/>
+                                    </span>
+                                    <field name="activity_ids" widget="kanban_activity"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'draft': 'warning', 'in_consultation': 'info', 'done': 'success', 'cancelled': 'danger'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record id="view_hospital_appointment_activity" model="ir.ui.view">
         <field name="name">hospital.appointment.activity</field>
         <field name="model">hospital.appointment</field>
@@ -115,7 +169,7 @@
                             class="btn-danger" context="{'hide_appointment':1}"
                             data-hotkey="z"/>
                     <button name="action_whatsapp_msg" string="Message in whatsapp" type="object"
-                            class="oe-highlight" icon="fa-whatsapp" data-hotkey="w"/>
+                            class="oe_highlight" icon="fa-whatsapp" data-hotkey="w"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_consultation,done"/>
                     <!--                           options="{'clickable': '1'}"-->
                 </header>
@@ -154,6 +208,8 @@
                                     help="You will be redirected to the patients records"
                                     confirm="Are you sure to visit the patients page?"
                                     groups="base.group_no_one"/>
+                            <button name="notification_button" string="Notification Button" type="object"
+                                    class="oe_highlight" groups="base.group_no_one"/>
                         </group>
                     </group>
                     <notebook>
@@ -171,7 +227,8 @@
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="price_unit" widget="monetary"
-                                           attrs="{'column_invisible': [('parent.show_sales_price', '=', True)]}"/>
+                                           attrs="{'column_invisible': [('parent.show_sales_price', '=', True)]}"
+                                           options="{'field_digits': True}"/>
                                     <field name="qty"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="price_subtotal" sum="Total"/>
@@ -210,7 +267,7 @@
         <field name="name">Appointment</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hospital.appointment</field>
-        <field name="view_mode">tree,form,calendar,activity</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

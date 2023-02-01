@@ -71,10 +71,30 @@ class HospitalAppointment(models.Model):
         message = 'Hii *%s*. Your appointment number is *%s* fixed on date:*%s*. Thankyou...'\
                   % (self.patient_id.name, self.appointment_id, self.appointment_time)
         whatsapp_url = 'https://api.whatsapp.com/send?phone=%s&text=%s' % (self.patient_id.phone, message)
+        self.message_post(subject='Whatsapp Message', body=message)
         return {
             'type': 'ir.actions.act_url',
             'target': 'new',
             'url': whatsapp_url
+        }
+
+    def notification_button(self):
+        # message = 'Clicked successfully'
+        action = self.env.ref('om_hospital.action_hospital_operation')
+        print('id....', self.operation.operation_name)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Click to open the operation record'),
+                'message': '%s',
+                'links': [{
+                    'label': 'Operations',
+                    'url': f'#action={action.id}&id={self.operation.id}&view_type=form&model=hospital.operation'
+                }],
+                'type': 'danger',
+                'sticky': False
+            }
         }
 
     def action_in_consultation(self):
@@ -136,7 +156,7 @@ class AppointmentPharmacyLists(models.Model):
 
     product_id = fields.Many2one('product.product', required=True)
     qty = fields.Integer(string="Quantity", default=1)
-    price_unit = fields.Float(related="product_id.list_price")
+    price_unit = fields.Float(related="product_id.list_price", digits="Product Price")
     appointment_id = fields.Many2one('hospital.appointment', string="Appointments")
     company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')

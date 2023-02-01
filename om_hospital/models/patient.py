@@ -55,7 +55,6 @@ class HospitalPatient(models.Model):
         for rec in self:
             rec.operation_count = self.env['hospital.operation'].search_count([('patient', '=', rec.id)])
 
-
     @api.constrains('dob')
     def check_dob(self):
         if self.dob and self.dob > fields.date.today():
@@ -76,9 +75,10 @@ class HospitalPatient(models.Model):
         return super().create(val)
 
     def write(self, val):
-        if not self.ref and not val.get('ref'):
-            val['ref'] = self.env['ir.sequence'].next_by_code('hospital.patients')
-        print("Trigerred write method", val)
+        for rec in self:
+            if not rec.ref and not val.get('ref'):
+                val['ref'] = self.env['ir.sequence'].next_by_code('hospital.patients')
+            print("Trigerred write method", val)
         return super().write(val)
 
     @api.depends('dob')
