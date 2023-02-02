@@ -27,6 +27,8 @@ This module contains features to manage an entire hospital
         'views/patient_tags.xml',
         'views/res_config_settings_views.xml',
         'views/operation_view.xml',
+        'report/report.xml',
+        'report/patient_card_template.xml',
     ],
     'demo': [],
     'installable': True,
