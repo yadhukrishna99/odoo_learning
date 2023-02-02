@@ -82,6 +82,8 @@ class HospitalAppointment(models.Model):
         # message = 'Clicked successfully'
         action = self.env.ref('om_hospital.action_hospital_operation')
         print('id....', self.operation.operation_name)
+        if not self.operation.id:
+            raise ValidationError(_("No operations to perform"))
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',

@@ -29,4 +29,7 @@ class SaleOrders(models.Model):
         return invoice_vals
 
 
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
 
+    line_number = fields.Integer(string="Line")

@@ -64,11 +64,32 @@ class CallDetails(models.Model):
             }
         raise ValidationError(_('Enter a url in the url field...'))
 
+    def notification_button(self):
+        action = self.env.ref('om_address_book.action_contact_tasks')
+        print("action_id", action.id)
+        if not self.tasks.id:
+            raise ValidationError(_('No tasks are specified'))
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Click to open and view the task'),
+                'message': '%s',
+                'links': [{
+                    'label': 'Task',
+                    'url': f'#action={action.id}&id={self.tasks.id}&view_type=form&model=contact.task'
+                }],
+                'type': 'success',
+                'sticky': False
+            }
+        }
+
     def whatsapp_message(self):
         if not self.phnum:
             raise ValidationError(_('Please provide a phone number'))
         msg = 'Hii *%s*. Your call *%s* is fixed on *%s*.Please call me on time.' % (self.contact.name, self.call_reference, self.call_time)
         url = 'https://api.whatsapp.com/send?phone=%s&text=%s' % (self.phnum, msg)
+        self.message_post(subject="Whatsapp Message", body=msg)
         return{
             'type': 'ir.actions.act_url',
             'target': 'new',

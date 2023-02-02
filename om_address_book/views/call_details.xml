@@ -102,6 +102,9 @@
                                     help="You will be redirected to the patients records"
                                     confirm="Are you sure to visit the patients page?"
                                     groups="base.group_no_one"/>
+                            <button name="notification_button" string="Notification Button" type="object"
+                                    class="oe_highlight"
+                                    groups="base.group_no_one"/>
                         </group>
                     </group>
                     <notebook>
